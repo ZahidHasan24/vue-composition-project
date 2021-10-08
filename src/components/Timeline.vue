@@ -10,27 +10,45 @@
         >{{ period }}</a
       >
     </span>
-    <a v-for="post in posts" :key="post.id" class="panel-block">
-      <a>{{ post.title }}</a>
-      <div>{{ post.created.format("Do MMM") }}</div>
-    </a>
+    <timeline-post v-for="post in posts" :key="post.id" :post="post" />
   </nav>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 import moment from "moment";
-import { today, thisWeek, thisMonth } from "../data";
+import { today, thisWeek, thisMonth, Post } from "@/data";
+import { useStore } from "@/store";
+import TimelinePost from "./TimelinePost.vue";
 
 type Period = "Today" | "This Week" | "This Month";
 
 export default defineComponent({
   name: "Timeline",
-  setup() {
+  components: {
+    TimelinePost,
+  },
+  async setup() {
     const periods = ["Today", "This Week", "This Month"];
     const currentPeriod = ref<Period>("Today");
+    const store = useStore();
+
+    if(!store.getState().posts.loaded) {
+      await store.fetchPosts()
+    }
+
+    const allPosts: Post[] = store
+      .getState()
+      .posts.ids.reduce<Post[]>((acc, id) => {
+        const thePost = store.getState().posts.all.get(id);
+        if (!thePost) {
+          throw Error("This post was not found");
+        }
+        return acc.concat(thePost);
+      }, []);
+
     const posts = computed(() => {
-      return [today, thisWeek, thisMonth].filter((post) => {
+      return allPosts.filter((post) => {
         if (currentPeriod.value === "Today") {
           return post.created.isAfter(moment().subtract(1, "day"));
         }
