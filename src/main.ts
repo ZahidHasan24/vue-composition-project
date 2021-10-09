@@ -3,6 +3,7 @@ import App from "./App.vue";
 import axios from "axios";
 import { router } from "@/router";
 import { today, thisWeek, thisMonth, Post } from "@/data";
+import 'highlight.js/styles/atom-one-dark.css';
 
 function delay() {
   return new Promise((res) => {
