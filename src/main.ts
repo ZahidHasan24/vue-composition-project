@@ -1,10 +1,11 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "@/App.vue";
 import axios from "axios";
 import { router } from "@/router";
 import { random } from "lodash";
 import { today, thisWeek, thisMonth, Post } from "@/data";
 import "highlight.js/styles/atom-one-dark.css";
+import { store } from "@/store";
 
 function delay() {
   return new Promise((res) => {
@@ -38,4 +39,5 @@ axios.post = async (url: string, post: Post) => {
 
 createApp(App)
   .use(router)
+  .use(store)
   .mount("#app");

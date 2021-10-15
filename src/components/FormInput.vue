@@ -5,7 +5,7 @@
       <input
         :type="type"
         class="input"
-        v-model="modelValue"
+        :value="modelValue"
         @input="handleInput"
       />
     </div>

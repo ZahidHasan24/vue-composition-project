@@ -1,6 +1,12 @@
-import { reactive, readonly } from "vue";
+import { reactive, readonly, provide, inject, App } from "vue";
 import axios from "axios";
 import { Post, today, thisWeek, thisMonth } from "@/data";
+
+export interface User {
+  id: string;
+  username: string;
+  password: string;
+}
 
 interface State {
   posts: PostState;
@@ -12,11 +18,15 @@ interface PostState {
   loaded: boolean;
 }
 
-class Store {
+export class Store {
   private state: State;
 
   constructor(initialState: State) {
     this.state = reactive(initialState);
+  }
+
+  install(app: App) {
+    app.provide("store", this);
   }
 
   getState() {
@@ -27,6 +37,10 @@ class Store {
     const response = await axios.post<Post>("/posts", post);
     this.state.posts.all.set(post.id, response.data);
     this.state.posts.ids.push(post.id);
+  }
+
+  async createUser(user: User) {
+    console.log({ user });
   }
 
   async fetchPosts() {
@@ -46,7 +60,7 @@ class Store {
 
 const all = new Map<string, Post>();
 
-const store = new Store({
+export const store = new Store({
   posts: {
     all,
     ids: [],
@@ -54,6 +68,10 @@ const store = new Store({
   },
 });
 
-export function useStore() {
-  return store;
+export function useStore(): Store {
+  const _store = inject<Store>("store");
+  if (!_store) {
+    throw Error("Did you forgot to call provide?");
+  }
+  return _store;
 }
