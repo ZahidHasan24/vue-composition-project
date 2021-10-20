@@ -1,10 +1,10 @@
 <template>
-  <div class="panel-block" :key="post.id">
+  <router-link class="panel-block" :key="post.id" :to="to">
     <div class="is-flex is-flex-direction-column is-align-items-flex-start">
       <a>{{ post.title }}</a>
       <div>{{ post.created.format("Do MMM") }}</div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script lang="ts">
@@ -19,8 +19,11 @@ export default defineComponent({
       required: true,
     },
   },
+  setup(props) {
+    const to = `/posts/${props.post.id}`;
+    return {
+      to,
+    };
+  },
 });
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>
