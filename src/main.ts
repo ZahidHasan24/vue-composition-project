@@ -5,7 +5,7 @@ import { router } from "@/router";
 import { random } from "lodash";
 import { today, thisWeek, thisMonth, Post } from "@/data";
 import "highlight.js/styles/atom-one-dark.css";
-import { store } from "@/store";
+import { Author, store, User } from "@/store";
 
 function delay() {
   return new Promise((res) => {
@@ -33,6 +33,21 @@ axios.post = async (url: string, post: Post) => {
         ...post,
         id,
       },
+    });
+  }
+};
+
+// @ts-ignore
+axios.post = async (url: string, user: User) => {
+  if (url === "/users") {
+    const id = random(100, 1000);
+    await delay();
+    const author: Author = {
+      id: id.toString(),
+      username: user.username,
+    };
+    return Promise.resolve({
+      data: author,
     });
   }
 };
