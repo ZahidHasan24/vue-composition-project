@@ -3,6 +3,7 @@
     :to="`/posts/${post.id}/edit`"
     class="button is-link is-rounded"
     data-test="can-edit"
+    v-if="canEdit"
   >
     Edit
   </router-link>
@@ -15,7 +16,7 @@ import { defineComponent } from "vue";
 import { useRoute } from "vue-router";
 export default defineComponent({
   name: "PostViewer",
-  async setup(props) {
+  async setup() {
     const store = useStore();
     const id = useRoute().params.id as string;
     if (!store.getState().posts.loaded) {
@@ -25,8 +26,10 @@ export default defineComponent({
     if (!post) {
       throw Error("Post was not found");
     }
+    const canEdit = post.authorId === store.getState().authors.currentUserId
     return {
       post,
+      canEdit
     };
   },
 });
