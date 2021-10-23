@@ -1,7 +1,7 @@
-import { mount, flushPromises } from "@vue/test-utils";
+import { Store } from "@/store";
+import { mount, flushPromises, RouterLinkStub } from "@vue/test-utils";
 import Timeline from "@/components/Timeline.vue";
 import { today, thisWeek, thisMonth } from "@/data";
-import { Store } from "@/store";
 
 jest.mock("axios", () => ({
   get: (url: string) => {
@@ -17,6 +17,12 @@ function mountTimeline() {
       ids: [],
       all: new Map(),
       loaded: false,
+    },
+    authors: {
+      ids: [],
+      all: new Map(),
+      loaded: false,
+      currentUserId: undefined,
     },
   });
 
@@ -36,43 +42,42 @@ function mountTimeline() {
 
   return mount(testComp, {
     global: {
+      components: {
+        RouterLink: RouterLinkStub,
+      },
       plugins: [store],
     },
   });
 }
 
 describe("Timeline", () => {
-  it("renders todays post", async () => {
+  it("renders today post default", async () => {
     const wrapper = mountTimeline();
+    // nextTick -> Vue internal promises
+    // axios -> flushPromises
     await flushPromises();
 
-    const todayDate = today.created.format("Do MMM");
-    expect(wrapper.html()).toContain(todayDate);
+    expect(wrapper.html()).toContain(today.created.format("Do MMM"));
   });
-  it("show this week date when this week is clicked", async () => {
+
+  it("update when the period is click", async () => {
     const wrapper = mountTimeline();
     await flushPromises();
 
-    const todayDate = today.created.format("Do MMM");
-    const thisWeekDate = thisWeek.created.format("Do MMM");
+    await wrapper.get('[data-test="This Week"]').trigger("click"); // nextTick
 
-    await wrapper.get('[data-test="This Week"]').trigger("click");
-
-    expect(wrapper.html()).toContain(todayDate);
-    expect(wrapper.html()).toContain(thisWeekDate);
+    expect(wrapper.html()).toContain(today.created.format("Do MMM"));
+    expect(wrapper.html()).toContain(thisWeek.created.format("Do MMM"));
   });
-  it("show this month date when this week is clicked", async () => {
+
+  it("update when the period is click", async () => {
     const wrapper = mountTimeline();
     await flushPromises();
 
-    const todayDate = today.created.format("Do MMM");
-    const thisWeekDate = thisWeek.created.format("Do MMM");
-    const thisMonthDate = thisMonth.created.format("Do MMM");
+    await wrapper.get('[data-test="This Month"]').trigger("click"); // nextTick
 
-    await wrapper.get('[data-test="This Month"]').trigger("click");
-
-    expect(wrapper.html()).toContain(todayDate);
-    expect(wrapper.html()).toContain(thisWeekDate);
-    expect(wrapper.html()).toContain(thisMonthDate);
+    expect(wrapper.html()).toContain(today.created.format("Do MMM"));
+    expect(wrapper.html()).toContain(thisWeek.created.format("Do MMM"));
+    expect(wrapper.html()).toContain(thisMonth.created.format("Do MMM"));
   });
 });
