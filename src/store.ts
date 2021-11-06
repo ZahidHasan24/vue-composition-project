@@ -21,7 +21,7 @@ interface AuthorState extends BaseState<Author> {
   currentUserId: string | undefined;
 }
 
-interface State {
+export interface State {
   authors: AuthorState;
   posts: PostsState;
 }
