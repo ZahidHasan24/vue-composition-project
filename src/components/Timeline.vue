@@ -1,4 +1,9 @@
 <template>
+  <div class="message is-primary is-marginless">
+    <div class="message-header">
+      <div>Posts for {{ currentPeriod.toLowerCase() }}</div>
+    </div>
+  </div>
   <nav class="is-primary panel">
     <span class="panel-tabs">
       <a
@@ -33,8 +38,8 @@ export default defineComponent({
     const currentPeriod = ref<Period>("Today");
     const store = useStore();
 
-    if(!store.getState().posts.loaded) {
-      await store.fetchPosts()
+    if (!store.getState().posts.loaded) {
+      await store.fetchPosts();
     }
 
     const allPosts: Post[] = store

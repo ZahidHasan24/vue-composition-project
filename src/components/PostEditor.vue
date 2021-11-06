@@ -1,11 +1,19 @@
-<template>Editor</template>
+<template>
+  <post-writer :post="post" @save="save" />
+</template>
 
 <script lang="ts">
 import { useStore } from "@/store";
 import { defineComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { Post } from "@/data";
+import PostWriter from "@/components/PostWriter.vue";
+
 export default defineComponent({
   name: "PostEditor",
+  components: {
+    PostWriter,
+  },
   async setup() {
     const store = useStore();
     const router = useRouter();
@@ -20,8 +28,14 @@ export default defineComponent({
     if (post.authorId !== store.getState().authors.currentUserId) {
       router.push("/");
     }
+    const save = async (post: Post) => {
+      await store.updatePost(post);
+      router.push("/");
+    };
+
     return {
       post,
+      save,
     };
   },
 });
